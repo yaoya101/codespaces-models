@@ -1,0 +1,248 @@
+name: Docker Image CI
+            - 名称：缓存
+  用途：actions/cache@v4.1.2
+  和：
+    # 要缓存和恢复的文件、目录和通配符模式的列表
+    小路：
+    # 用于恢复和保存缓存的显式密钥
+    钥匙：
+    # 一个有序的多行字符串，列出前缀匹配的键，用于在键未发生缓存命中时恢复过时的缓存。注意，在这种情况下，“cache-hit”返回 false。
+    恢复密钥：# 可选
+    # 上传过程中用于分割大文件的块大小，以字节为单位
+    上传块大小：#可选
+    # 启用时可选布尔值，允许 Windows 运行器保存或恢复可在其他平台上分别恢复或保存的缓存
+    enableCrossOsArchive: # 可选，默认为 false
+    # 如果未找到缓存条目，则工作流失败
+    fail-on-cache-miss: # 可选，默认为 false
+    # 检查给定输入（key、restore-keys）的缓存条目是否存在，无需下载缓存
+    lookup-only: # 可选，默认为 false
+    # 即使之前的步骤失败，也要运行后续步骤来保存缓存
+    save-always: # 可选，默认为 false
+                - 名称：安装 .NET Core SDK
+  用途：actions/setup-dotnet@v4.1.0
+  和：
+    # 可选使用的 SDK 版本。如果未提供，将在可用时安装 global.json 版本。示例：2.2.104、3.1、3.1.x、3.x、6.0.2xx
+    dotnet-version: # 可选
+    # 可选的构建质量。可能的值包括：daily、signed、validated、preview、ga。
+    dotnet-quality: # 可选
+    # 可选的 global.json 位置，如果您的 global.json 不在 repo 的根目录中。
+    全局 JSON 文件：# 可选
+    # 可选的包源，用于设置身份验证。将查阅存储库根目录中的任何现有 NuGet.config，并使用 NUGET_AUTH_TOKEN 环境变量作为 ClearTextPassword 提供临时 NuGet.config
+    源网址：#可选
+    # 可选的 OWNER，用于使用来自 GitHub Package Registry 组织/用户（而不是当前存储库所有者）的软件包。仅当在 source-url 中也提供了 GPR URL 时才使用
+    所有者：#可选
+    # 可选的 NuGet.config 位置，如果您的 NuGet.config 不在 repo 的根目录中。
+    配置文件：#可选
+    # 可选输入，用于启用 NuGet 全局包文件夹的缓存
+    缓存：#可选
+    # 用于指定依赖文件的路径：packages.lock.json。支持通配符或文件名列表，用于缓存多个依赖项。
+    缓存依赖路径：#可选
+                           - 名称：设置 Node.js 环境
+  用途：actions/setup-node@v4.1.0
+  和：
+    # 在 npmrc 中设置 always-auth。
+    always-auth: # 可选，默认为 false
+    # 要使用的版本的版本规范。示例：12.x、10.15.1、>=10.15.0。
+    节点版本：#可选
+    # 包含要使用的版本的版本规范的文件。示例：package.json、.nvmrc、.node-version、.tool-versions。
+    node-version-file: # 可选
+    # Node 要使用的目标架构。示例：x86、x64。默认情况下将使用系统架构。
+    架构：#可选
+    # 如果您希望操作检查满足版本规范的最新可用版本，请设置此选项。
+    检查最新：#可选
+    # 可选注册表，用于设置身份验证。将在项目级 .npmrc 和 .yarnrc 文件中设置注册表，并设置身份验证以从 env.NODE_AUTH_TOKEN 读取。
+    registry-url: # 可选
+    # 用于针对范围注册表进行身份验证的可选范围。使用 GitHub Packages 注册表 (https://npm.pkg.github.com/) 时将返回到存储库所有者。
+    范围：#可选
+    # 用于从节点版本中提取节点分布。由于存在默认值，因此用户通常不提供该值。在 github.com 上运行此操作时，默认值就足够了。在 GHES 上运行时，如果您遇到速率限制，则可以传递 github.com 的个人访问令牌。
+    token: # 可选，默认为 ${{ github.server_url == 'https://github.com' && github.token || '' }}
+    # 用于指定在默认目录中缓存的包管理器。支持的值：npm、yarn、pnpm。
+    缓存：#可选
+    # 用于指定依赖文件的路径：package-lock.json、yarn.lock 等。支持通配符或文件名列表，用于缓存多个依赖项。
+    缓存依赖路径：#可选
+                       - 名称：下载构建工件
+  用途：actions/download-artifact@v4.1.8
+  和：
+    # 要下载的工件的名称。如果未指定，则下载运行的所有工件。
+    名称：#可选
+    # 目标路径。支持基本波浪符号扩展。默认为 $GITHUB_WORKSPACE
+    路径：#可选
+    # 与应下载的工件匹配的 glob 模式。如果指定了名称，则忽略。
+    模式：#可选
+    # 当多个工件匹配时，这会改变目标目录的行为。如果为 true，则下载的工件将位于路径指定的同一目录中。如果为 false，则下载的工件将被提取到指定路径内的单独命名目录中。
+    合并多个：#可选，默认为 false
+    # 用于通过 GitHub API 进行身份验证的 GitHub 令牌。从其他存储库或从其他工作流程运行下载工件时需要此令牌。如果未指定，则操作将尝试从当前存储库和当前工作流程运行下载工件。
+    github-token: # 可选
+    # 仓库所有者和仓库名称以“/”连接在一起。如果指定了 github-token，则这是将从中下载工件的仓库。
+    存储库：# 可选，默认为 ${{ github.repository }}
+    # 上传所需下载工件的工作流运行的 ID。如果指定了 github-token，则这是从中下载工件的运行。
+    run-id: # 可选，默认为 ${{ github.run_id }}
+                      - 名称：关闭过期问题
+  用途：actions/stale@v9.0.0
+  和：
+    # 存储库的令牌。可以使用 `{{ secrets.GITHUB_TOKEN }}` 传入。
+    repo-token: # 可选，默认为 ${{ github.token }}
+    # 标记问题时发布的消息。如果没有提供，则不会将问题标记为过时。
+    陈旧的问题消息：# 可选
+    # 标记拉取请求时发布的消息。如果未提供，则不会将拉取请求标记为过时。
+    stale-pr-message: # 可选
+    # 关闭问题时要​​发布的消息。如果没有提供，则关闭问题时不会发表评论。
+    关闭问题消息：# 可选
+    # 关闭拉取请求时发布的消息。如果没有提供，则在关闭拉取请求时不会发表评论。
+    close-pr-message: # 可选
+    # 问题或拉取请求在被标记为过时之前可以存在的天数。设置为 -1 则永远不会自动将问题或拉取请求标记为过时。
+    days-before-stale: # 可选，默认为 60
+    # 问题在被标记为过时之前可以存在多少天。设置为 -1 则永远不会自动将问题标记为过时。仅针对问题覆盖“days-before-stale”选项。
+    问题过期前几天：# 可选
+    # 拉取请求在被标记为过期之前可以保留的天数。设置为 -1 则永远不会自动将拉取请求标记为过期。仅针对拉取请求覆盖“days-before-stale”选项。
+    days-before-pr-stale: # 可选
+    # 问题或拉取请求被标记为过时后，等待关闭该问题的天数。设置为 -1 表示永不关闭过时的问题或拉取请求。
+    days-before-close: # 可选，默认为 7
+    # 问题被标记为过时后要等待多少天才能关闭。设置为 -1 表示永不关闭过时的问题。仅针对问题覆盖“days-before-close”选项。
+    问题关闭前几天：# 可选
+    # 拉取请求被标记为过期后等待关闭的天数。设置为 -1 表示永不关闭过期的拉取请求。仅针对拉取请求覆盖“days-before-close”选项。
+    公关结束前几天：# 可选
+    # 当问题过时时应用的标签。
+    stale-issue-label: # 可选，默认为 Stale
+    # 问题关闭时应用的标签。
+    关闭问题标签：# 可选
+    # 表示问题不会被标记为过时的标签。用逗号分隔多个标签（例如“label1,label2”）。
+    exempt-issue-labels: # 可选，默认为
+    # 关闭问题时要​​使用的原因。
+    close-issue-reason: # 可选，默认为 not_planned
+    # 当拉取请求过时时应用的标签。
+    stale-pr-label: # 可选，默认为 Stale
+    # 当拉取请求关闭时应用的标签。
+    close-pr-label: # 可选
+    # 表示拉取请求不会被标记为过时的标签。使用逗号分隔多个标签（例如“label1,label2”）。
+    exempt-pr-labels: # 可选，默认为
+    # 里程碑意味着问题或拉取请求不会被标记为过时。用逗号分隔多个里程碑（例如“里程碑 1，里程碑 2”）。
+    豁免里程碑：# 可选，默认为
+    # 里程碑意味着问题不会被标记为过时。用逗号分隔多个里程碑（例如“里程碑 1、里程碑 2”）。仅针对问题覆盖“豁免里程碑”选项。
+    exempt-issue-milestones: # 可选，默认为
+    # 里程碑意味着拉取请求不会被标记为过时。用逗号分隔多个里程碑（例如“里程碑 1、里程碑 2”）。仅针对拉取请求覆盖“豁免里程碑”选项。
+    exempt-pr-milestones: # 可选，默认为
+    # 免除所有具有里程碑的问题和拉取请求被标记为过时。默认为 false。
+    exempt-all-milestones: # 可选，默认为 false
+    # 免除所有具有里程碑的问题被标记为过时的问题。仅针对问题覆盖“豁免所有里程碑”选项。
+    exempt-all-issue-milestones: # 可选，默认为
+    # 免除所有具有里程碑的拉取请求被标记为过时。仅针对拉取请求覆盖“豁免所有里程碑”选项。
+    exempt-all-pr-milestones: # 可选，默认为
+    # 仅检查具有所有这些标签的问题或拉取请求是否过时。默认为 ``（禁用），可以是逗号分隔的标签列表。
+    only-labels: # 可选，默认为
+    # 仅检查至少带有其中一个标签的问题或拉取请求是否过时。默认为 ``（禁用），可以是逗号分隔的标签列表。
+    any-of-labels: # 可选，默认为
+    # 如果问题已过时，则仅检查至少具有其中一个标签的问题。默认为 ``（已禁用），可以是逗号分隔的标签列表。覆盖仅与问题相关的“任何标签”选项。
+    any-of-issue-labels: # 可选，默认为
+    # 仅检查具有至少一个这些标签的拉取请求是否过时。默认为 ``（禁用），可以是逗号分隔的标签列表。覆盖仅与拉取请求有关的“任何标签”选项。
+    any-of-pr-labels: # 可选，默认为
+    # 如果问题已过时，则仅检查所有这些标签的问题。默认为 `[]`（禁用），可以是逗号分隔的标签列表。覆盖仅与问题相关的“only-labels”选项。
+    only-issue-labels: # 可选，默认为
+    # 仅检查具有所有这些标签的拉取请求是否过时。默认为 `[]`（禁用），可以是逗号分隔的标签列表。覆盖仅与拉取请求相关的“only-labels”选项。
+    only-pr-labels: # 可选，默认为
+    # 每次运行的最大操作数，用于控制速率限制（GitHub API CRUD 相关）。
+    每次运行的操作：# 可选，默认值为 30
+    # 当问题和拉取请求被更新或评论时，删除过时的标签。
+    remove-stale-when-updated: # 可选，默认为 true
+    # 当问题更新或评论时，删除过时的标签。仅针对问题覆盖“remove-stale-when-updated”选项。
+    remove-issue-stale-when-updated: # 可选，默认为
+    # 当更新或评论拉取请求时，删除过时的标签。仅针对拉取请求覆盖“remove-stale-when-updated”选项。
+    remove-pr-stale-when-updated: # 可选，默认为
+    # 在调试模式下运行处理器，但不对实时问题实际执行任何操作。
+    debug-only: # 可选，默认为 false
+    # 获取问题或拉取请求的顺序。默认为 false，即降序。
+    升序：#可选，默认为 false
+    # 关闭过时的拉取请求后删除 git 分支。
+    delete-branch: # 可选，默认为 false
+    # 用于跳过在其之前创建的问题/拉取请求的过时操作的日期（ISO 8601或RFC 2822）。
+    开始日期：#可选，默认为
+    # 免除将问题或拉取请求标记为过时的受让人。使用逗号分隔多个受让人（例如“user1,user2”）。
+    exempt-assignees: # 可选，默认为
+    # 免除将问题标记为过时的受让人。用逗号分隔多个受让人（例如“user1,user2”）。仅针对问题覆盖“exempt-assignees”选项。
+    exempt-issue-assignees: # 可选，默认为
+    # 免除拉取请求被标记为过时的受让人。用逗号分隔多个受让人（例如“user1,user2”）。仅针对拉取请求覆盖“exempt-assignees”选项。
+    exempt-pr-assignees: #可选，默认为
+    # 免除所有问题和带有受让人的拉取请求被标记为过时。默认为 false。
+    exempt-all-assignees: # 可选，默认为 false
+    # 免除所有受让人被标记为过时的问题。仅针对问题覆盖“豁免所有受让人”选项。
+    exempt-all-issue-assignees: # 可选，默认为
+    # 免除所有受让人的拉取请求被标记为过时。仅覆盖与拉取请求相关的“exempt-all-assignees”选项。
+    exempt-all-pr-assignees: #可选，默认为
+    # 免除将草稿拉取请求标记为过时。默认为 false。
+    exempt-draft-pr: # 可选，默认为 false
+    # 在最后显示有关陈旧工作流程的一些统计数据（仅当启用日志时）。
+    enable-statistics: # 可选，默认为 true
+    # 当问题或拉取请求不再过时时添加的以逗号分隔的标签列表。
+    标签在未过时时添加：#可选，默认为
+    # 当问题或拉取请求变得陈旧时，要删除的以逗号分隔的标签列表。
+    标签过期时删除：#可选，默认为
+    # 当问题或拉取请求不再过时，要删除的以逗号分隔的标签列表。
+    标签在不过期时删除：#可选，默认为
+    # 任何更新（更新/评论）都可以重置问题和拉取请求上的陈旧空闲时间。
+    ignore-updates: # 可选，默认为 false
+    # 任何更新（更新/评论）都可以重置问题的陈旧空闲时间。仅针对问题覆盖“忽略更新”选项。
+    ignore-issue-updates: # 可选，默认为
+    # 任何更新（更新/评论）都可以重置拉取请求的陈旧空闲时间。仅针对拉取请求覆盖“忽略更新”选项。
+    ignore-pr-updates: # 可选，默认为
+    # 只有具有受让人的问题或拉取请求才会自动标记为过时。
+    include-only-assigned: # 可选，默认为 false
+          
+on:            - 名称：安装 Java JDK
+  用途：actions/setup-java@v4.5.0
+  和：
+    # 要设置的 Java 版本。采用完整或 semver Java 版本。请参阅 README 文件中支持的语法示例
+    java-version: # 可选
+    # `.java-version` 文件的路径。请参阅 README 文件中支持的语法示例
+    java-version-file: # 可选
+    # Java 发行版。请参阅 README 文件中支持的发行版列表
+    分配：
+    # 软件包类型 (jdk, jre, jdk+fx, jre+fx)
+    java-package: # 可选，默认为 jdk
+    # 包的架构（默认为动作运行器的架构）
+    架构：#可选
+    # 压缩 JDK 所在路径
+    jdkFile: # 可选
+    # 如果您希望操作检查满足版本规范的最新可用版本，请设置此选项
+    检查最新：#可选
+    # pom.xml 文件中 distributionManagement 存储库的 ID。默认为“github”
+    server-id: # 可选，默认为 github
+    # 用于向 Apache Maven 存储库进行身份验证的用户名的环境变量名称。默认值为 $GITHUB_ACTOR
+    server-username: # 可选，默认为 GITHUB_ACTOR
+    # 用于向 Apache Maven 存储库进行身份验证的密码或令牌的环境变量名称。默认值为 $GITHUB_TOKEN
+    server-password: # 可选，默认为 GITHUB_TOKEN
+    # 设置.xml 文件的写入路径。默认为 ~/.m2。
+    设置路径：#可选
+    # 如果存在 settings.xml 文件，则覆盖它。默认值为“true”。
+    覆盖设置：# 可选，默认为 true
+    # 要导入的 GPG 私钥。默认为空字符串。
+    gpg-private-key: # 可选
+    # GPG 私钥密码的环境变量名称。默认为 $GPG_PASSPHRASE。
+    gpg-passphrase: # 可选
+    # 用于缓存依赖项的构建平台的名称。它可以是“maven”、“gradle”或“sbt”。
+    缓存：#可选
+    # 依赖文件的路径：pom.xml、build.gradle、build.sbt 等。此选项可与 `cache` 选项一起使用。如果省略此选项，操作将在整个存储库中搜索依赖文件。此选项支持通配符和文件名列表，用于缓存多个依赖项。
+    缓存依赖路径：#可选
+    # 将作业状态传递到作业发布步骤的解决方法。此变量不适用于手动设置
+    job-status: # 可选，默认为 ${{ job.status }}
+    # 获取托管在 github.com 上的版本清单（例如 OpenJDK 的 Microsoft Build）时用于进行身份验证的令牌。在 github.com 上运行此操作时，默认值就足够了。在 GHES 上运行时，如果您遇到速率限制，则可以传递 github.com 的个人访问令牌。
+    token: # 可选，默认为 ${{ github.server_url == 'https://github.com' && github.token || '' }}
+    # 如果不需要默认名称“${distribution}_${java-version}”，则为 Maven 工具链 ID 的名称。请参阅高级使用文件中支持的语法示例
+    mvn-toolchain-id: # 可选
+    # 如果不需要默认名称“${distribution}”，则为 Maven 工具链供应商的名称。请参阅高级使用文件中支持的语法示例
+    mvn-toolchain-vendor: # 可选
+          
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
