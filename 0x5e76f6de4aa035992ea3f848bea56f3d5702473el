@@ -3,7 +3,7 @@ name: Docker Image CI
   用途：actions/cache@v4.1.2
   和：
     # 要缓存和恢复的文件、目录和通配符模式的列表
-    小路：
+    小路：https://www.geckoterminal.com/base/pools/0xc7cbdb576f964a1bbff1efc8b4562251d5dfc20e
     # 用于恢复和保存缓存的显式密钥
     钥匙：
     # 一个有序的多行字符串，列出前缀匹配的键，用于在键未发生缓存命中时恢复过时的缓存。注意，在这种情况下，“cache-hit”返回 false。
